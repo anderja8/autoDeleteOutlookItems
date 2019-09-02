@@ -1,0 +1,58 @@
+Sub DeleteIPSQBlocks()
+
+    'Set variables
+    Dim oFolder As Outlook.Folder
+    Dim oItems As Outlook.Items
+    Dim tempMail As Outlook.MailItem
+    Dim i As Long
+    Dim counterInbox As Long
+    Dim counterDeletedItems As Long
+
+   
+
+    'Get inbox folders
+    Set oFolder = Application.Session.GetDefaultFolder(olFolderInbox)
+    Set oItems = oFolder.Items
+    counterInbox = 0
+    counterDeletedItems = 0
+
+   
+
+    'Delete from inbox if older than 12 hours
+    For i = oItems.Count To 1 Step -1
+        If TypeOf oItems.Item(i) Is Outlook.MailItem Then
+            Set tempMail = oItems.Item(i)
+
+            If (tempMail.SenderName = "Sender_Name_Here" or tempMail.Subject = "Mail_Subject_Here") And (Now() - tempMail.SentOn) > 0.5 Then
+                oItems.Item(i).Delete
+                counterInbox = counterInbox + 1
+            End If
+
+        End If
+    Next
+
+   
+
+    'Delete from deleted items if older than 12 hours
+    Set oFolder = Application.Session.GetDefaultFolder(olFolderDeletedItems)
+    Set oItems = oFolder.Items
+    For i = oItems.Count To 1 Step -1
+        If TypeOf oItems.Item(i) Is Outlook.MailItem Then
+            Set tempMail = oItems.Item(i)
+
+            If (tempMail.SenderName = "Sender_Name_Here" or tempMail.Subject = "Mail_Subject_Here") And (Now() - tempMail.SentOn) > 0.5 Then
+                oItems.Item(i).Delete
+                counterDeletedItems = counterDeletedItems + 1
+            End If
+
+        End If
+    Next
+
+   
+
+    'Print confirmation that emails were removed from inbox and deleted items
+    MsgBox (CStr(counterInbox) & " emails deleted from the inbox." & Chr(13) & Chr(10) & Chr(13) & Chr(10) & CStr(counterDeletedItems) & " emails permanently deleted from the deleted items folder.")
+
+   
+
+End Sub
